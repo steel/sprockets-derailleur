@@ -22,9 +22,9 @@ Require `sprockets-derailleur` in environment file:
 
 ## Usage
 
-Determine how many workers you want to use first. On OSX you can determine the number of physical CPUs this way:
+Determine how many workers you want to use first. Determine the number of physical CPUs this way:
 
-    processes = Integer `sysctl -n hw.physicalcpu 2>/dev/null` rescue 1
+    processes = SprocketsDerailleur::number_of_processors rescue 1
 
 Then initialize the manifest with the workers you just determined:
   
