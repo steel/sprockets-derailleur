@@ -1,6 +1,6 @@
 # Sprockets::Derailleur
 
-TODO: Write a gem description
+Speed up Manifest::Compile by forking processes 
 
 ## Installation
 
@@ -16,9 +16,20 @@ Or install it yourself as:
 
     $ gem install sprockets-derailleur
 
+Require `sprockets-derailleur` in environment file:
+    
+    require 'sprockets-derailleur'
+
 ## Usage
 
-TODO: Write usage instructions here
+Determine how many workers you want to use first. On OSX you can determine the number of physical CPUs this way:
+
+    processes = Integer `sysctl -n hw.physicalcpu 2>/dev/null` rescue 1
+
+Then initialize the manifest with the workers you just determined:
+  
+    manifest = Sprockets::Manifest.new(Application::Sprockets, 'public/assets', processes)
+
 
 ## Contributing
 
