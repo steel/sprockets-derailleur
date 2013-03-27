@@ -87,6 +87,14 @@ Sprockets derailleur is known to work with (and possibly others):
 - turbo-sprockets-rails3
 - asset-sync
 
+If you only intent to use digest assets, for example in production environments, you can also speed up your compile by using
+
+```
+rake assets:precompile:primary RAILS_ENV=production
+```
+
+This skips the non-digest compile, hence doubling speed (especially useful if syncing assets with a remote server).
+
 ## Contributing
 
 1. Fork it
