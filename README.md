@@ -22,14 +22,70 @@ Require `sprockets-derailleur` in environment file:
 
 ## Usage
 
-Determine how many workers you want to use first. Determine the number of physical CPUs this way:
+To install to an existing rails 3.2 project, first create a new file, 'sprockets_derailleur.rb' in config/initializers.
 
-    processes = SprocketsDerailleur::number_of_processors rescue 1
+Here we need to override some core parts of the sprockets module.
 
-Then initialize the manifest with the workers you just determined:
+```ruby
+module Sprockets
+  class StaticCompiler
   
-    manifest = Sprockets::Manifest.new(Application::Sprockets, 'public/assets', processes)
+    alias_method :compile_without_manifest, :compile
+    def compile
+    
+      # Determine how many workers you want to use first. Determine the number of physical CPUs this way
+      processes = SprocketsDerailleur::number_of_processors rescue 1
+      
+      puts "Multithreading on " + processes.to_s + " processors"
+      puts "Starting Asset Compile: " + Time.now.getutc.to_s
+      
+      # Then initialize the manifest with the workers you just determined
+      manifest = Sprockets::Manifest.new(env, target, processes)
+      manifest.compile paths
+      
+      puts "Finished Asset Compile: " + Time.now.getutc.to_s
+      
+    end
+  end
+  
+  class Railtie < ::Rails::Railtie
+    config.after_initialize do |app|
+      
+      config = app.config
+      next unless config.assets.enabled
 
+      if config.assets.manifest
+        path = File.join(config.assets.manifest, "manifest.json")
+      else
+        path = File.join(Rails.public_path, config.assets.prefix, "manifest.json")
+      end
+
+      if File.exist?(path)
+        manifest = Sprockets::Manifest.new(app, path)
+        config.assets.digests = manifest.assets
+      end
+      
+    end
+  end
+  
+end
+```
+
+The first block that overrides compile method starts sprockets derailleur with the chosen number of worker threads.
+For maximum performance this should be the same number of processor cores on your compile machine.
+
+The second block that is called after rails initializes is there because newer versions of sprockets are writing your
+digested assets to manifest.json (Rails 4), instead of manifest.yml (Rails 3.2).
+
+We therefore load in manifest.json using the Rails 4 method, as your asset compile will write this file. To avoid a duplicate
+load, remember to delete the old manifest.yml from your public/assets folder.
+
+A word of caution however, some gems that work with the asset pipeline still expect manifest.yml to exist.
+
+Sprockets derailleur is known to work with (and possibly others):
+
+- turbo-sprockets-rails3
+- asset-sync
 
 ## Contributing
 
