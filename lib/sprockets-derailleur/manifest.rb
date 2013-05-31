@@ -12,6 +12,8 @@ module Sprockets
 
     alias_method :compile_with_workers, :compile
     def compile(*args)
+      paths_with_errors = {}
+
       time = Benchmark.measure do
         paths = environment.each_logical_path(*args).to_a +
           args.flatten.select { |fn| Pathname.new(fn).absolute? if fn.is_a?(String)}
@@ -45,10 +47,13 @@ module Sprockets
           break if finished >= paths.size
 
           ready = IO.select(reads, writes)
+
           ready[0].each do |readable|
             data = Marshal.load(readable)
             assets.merge! data["assets"]
             files.merge! data["files"]
+            paths_with_errors.merge! data["errors"]
+
             finished += 1
           end
 
@@ -75,6 +80,14 @@ module Sprockets
       end
 
       logger.warn "Completed compiling assets (#{(time.real * 100).round / 100.0}s)"
+
+      unless paths_with_errors.empty?
+        logger.warn "Asset paths with errors:"
+
+        paths_with_errors.each do |path, message|
+          logger.warn "\t#{path}: #{message}"
+        end
+      end
     end
 
     def worker(paths)
@@ -90,8 +103,9 @@ module Sprockets
             path = paths[Marshal.load(child_read)]
 
             time = Benchmark.measure do
+              data = {'assets' => {}, 'files' => {}, 'errors' => {}}
+
               if asset = find_asset(path)
-                data = {'assets' => {}, 'files' => {}}
 
                 data['files'][asset.digest_path] = {
                   'logical_path' => asset.logical_path,
@@ -110,6 +124,9 @@ module Sprockets
                   asset.write_to target
                 end
 
+                Marshal.dump(data, child_write)
+              else
+                data['errors'][path] = "Not found"
                 Marshal.dump(data, child_write)
               end
             end
