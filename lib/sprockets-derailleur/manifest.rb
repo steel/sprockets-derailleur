@@ -16,6 +16,18 @@ module Sprockets
         paths = environment.each_logical_path(*args).to_a +
           args.flatten.select { |fn| Pathname.new(fn).absolute? if fn.is_a?(String)}
 
+        # Skip all files without extensions, see
+        # https://github.com/sstephenson/sprockets/issues/347 for more info
+        paths = paths.select do |path|
+
+          if File.extname(path) == ""
+            logger.info "Skipping #{path} since it has no extension"
+            false
+          else
+            true
+          end
+        end
+
         logger.warn "Initializing #{@workers} workers"
 
         workers = []
