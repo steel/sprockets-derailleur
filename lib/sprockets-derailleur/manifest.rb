@@ -113,7 +113,8 @@ module Sprockets
                 Marshal.dump(data, child_write)
               end
             end
-            logger.warn "Compiled #{path} (#{(time.real * 1000).round}ms)"
+
+            logger.warn "Compiled #{path} (#{(time.real * 1000).round}ms, pid #{Process.pid})"
           end
         ensure
           child_read.close
