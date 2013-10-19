@@ -4,21 +4,9 @@ Speed up Manifest::Compile by forking processes
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-    gem 'sprockets-derailleur'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install sprockets-derailleur
-
-Require `sprockets-derailleur` in environment file:
-    
-    require 'sprockets-derailleur'
+1. Add this line to your application's Gemfile: `gem 'sprockets-derailleur'`
+2. And then execute: `$ bundle`, or install it yourself as: `$ gem install sprockets-derailleur`
+3. Require `sprockets-derailleur` in environment file: `require 'sprockets-derailleur'`
 
 ## Usage
 
