@@ -10,6 +10,14 @@ Speed up Manifest::Compile by forking processes
 
 ## Usage
 
+### Rails 4.0
+
+Just drop in the Gemfile, nothing more. To override the number of processes you
+can use the `SPROCKETS_DERAILLEUR_WORKER_COUNT` environment variable. It
+defaults to the number of processors on your machine.
+
+### Rails 3.2
+
 To install to an existing rails 3.2 project, first create a new file, 'sprockets_derailleur.rb' in config/initializers.
 
 Here we need to override some core parts of the sprockets module.

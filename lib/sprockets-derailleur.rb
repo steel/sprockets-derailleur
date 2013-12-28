@@ -23,4 +23,12 @@ module SprocketsDerailleur
     end
     raise "can't determine 'number_of_processors' for '#{RUBY_PLATFORM}'"
   end
+
+  def self.default_worker_count
+    worker_count = ENV['SPROCKETS_DERAILLEUR_WORKER_COUNT'].to_i
+    return worker_count if worker_count > 0
+    number_of_processors
+  rescue
+    1
+  end
 end

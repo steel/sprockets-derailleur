@@ -3,9 +3,9 @@ require "sprockets"
 module Sprockets
   class Manifest
     attr_reader :workers
-    
+
     alias_method :old_initialize, :initialize
-    def initialize(environment, path, workers=1)
+    def initialize(environment, path, workers=SprocketsDerailleur::default_worker_count)
       @workers = workers
       old_initialize(environment, path)
     end
