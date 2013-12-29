@@ -10,11 +10,13 @@ Speed up Manifest::Compile by forking processes
 
 ## Usage
 
+To override the number of processes you can use the
+`SPROCKETS_DERAILLEUR_WORKER_COUNT` environment variable. It defaults to the
+number of processors on your machine.
+
 ### Rails 4.0
 
-Just drop in the Gemfile, nothing more. To override the number of processes you
-can use the `SPROCKETS_DERAILLEUR_WORKER_COUNT` environment variable. It
-defaults to the number of processors on your machine.
+Just drop in the Gemfile, nothing more.
 
 ### Rails 3.2
 
@@ -28,15 +30,11 @@ module Sprockets
   
     alias_method :compile_without_manifest, :compile
     def compile
-    
-      # Determine how many workers you want to use first. Determine the number of physical CPUs this way
-      processes = SprocketsDerailleur::number_of_processors rescue 1
-      
-      puts "Multithreading on " + processes.to_s + " processors"
+      puts "Multithreading on " + SprocketsDerailleur.worker_count + " processors"
       puts "Starting Asset Compile: " + Time.now.getutc.to_s
       
       # Then initialize the manifest with the workers you just determined
-      manifest = Sprockets::Manifest.new(env, target, processes)
+      manifest = Sprockets::Manifest.new(env, target)
       manifest.compile paths
       
       puts "Finished Asset Compile: " + Time.now.getutc.to_s
