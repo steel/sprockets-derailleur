@@ -2,16 +2,9 @@ require "sprockets"
 
 module Sprockets
   class Manifest
-    attr_reader :workers
-    
-    alias_method :old_initialize, :initialize
-    def initialize(environment, path, workers=1)
-      @workers = workers
-      old_initialize(environment, path)
-    end
-
     alias_method :compile_with_workers, :compile
     def compile(*args)
+      worker_count = SprocketsDerailleur::worker_count
       paths_with_errors = {}
 
       time = Benchmark.measure do
@@ -30,10 +23,10 @@ module Sprockets
           end
         end
 
-        logger.warn "Initializing #{@workers} workers"
+        logger.warn "Initializing #{worker_count} workers"
 
         workers = []
-        @workers.times do
+        worker_count.times do
           workers << worker(paths)
         end
 
