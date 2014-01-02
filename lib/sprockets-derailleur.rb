@@ -1,5 +1,6 @@
 require "sprockets-derailleur/version"
 require "sprockets-derailleur/manifest"
+require "sprockets-derailleur/file_store"
 
 module SprocketsDerailleur
   def self.number_of_processors
@@ -11,7 +12,7 @@ module SprocketsDerailleur
       # this works for windows 2000 or greater
       require 'win32ole'
       wmi = WIN32OLE.connect("winmgmts://")
-      wmi.ExecQuery("select * from Win32_ComputerSystem").each do |system| 
+      wmi.ExecQuery("select * from Win32_ComputerSystem").each do |system|
         begin
           processors = system.NumberOfLogicalProcessors
         rescue

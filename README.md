@@ -83,6 +83,28 @@ rake assets:precompile:primary RAILS_ENV=production
 
 This skips the non-digest compile, hence doubling speed (especially useful if syncing assets with a remote server).
 
+## Troubleshooting
+
+In some situations (like if you are using compass sprites) you may see
+occasional exceptions such as:
+
+```
+lib/active_support/core_ext/marshal.rb:6:in `load': end of file reached (EOFError)
+
+AND/OR
+
+lib/sprockets-derailleur/manifest.rb:127:in `write': Broken pipe (Errno::EPIPE)
+```
+
+The default cache is not safe for parallel, you can override it by adding the
+following to `config/application.rb`:
+
+```ruby
+config.assets.configure do |env|
+  env.cache = SprocketsDerailleur::FileStore.new("tmp/cache/assets")
+end
+```
+
 ## Contributing
 
 1. Fork it
