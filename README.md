@@ -30,7 +30,7 @@ module Sprockets
   
     alias_method :compile_without_manifest, :compile
     def compile
-      puts "Multithreading on " + SprocketsDerailleur.worker_count + " processors"
+      puts "Multithreading on " + SprocketsDerailleur.worker_count.to_s + " processors"
       puts "Starting Asset Compile: " + Time.now.getutc.to_s
       
       # Then initialize the manifest with the workers you just determined
