@@ -125,7 +125,7 @@ module Sprockets
               end
             end
 
-            logger.warn "Compiled #{path} (#{(time.real * 1000).round}ms, pid #{Process.pid})"
+            logger.debug "Compiled #{path} (#{(time.real * 1000).round}ms, pid #{Process.pid})"
           end
         ensure
           child_read.close
