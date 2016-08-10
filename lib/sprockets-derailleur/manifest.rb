@@ -98,8 +98,7 @@ module Sprockets
             time = Benchmark.measure do
               data = {'assets' => {}, 'files' => {}, 'errors' => {}}
 
-              if asset = find_asset(path)
-
+              find(path) do |asset|
                 data['files'][asset.digest_path] = {
                   'logical_path' => asset.logical_path,
                   'mtime'        => asset.mtime.iso8601,
@@ -115,12 +114,9 @@ module Sprockets
                 else
                   logger.debug "Writing #{target}"
                   asset.write_to target
-                  asset.write_to "#{target}.gz" if asset.is_a?(BundledAsset)
+                  asset.write_to "#{target}.gz" unless environment.skip_gzip?
                 end
 
-                Marshal.dump(data, child_write)
-              else
-                data['errors'][path] = "Not found"
                 Marshal.dump(data, child_write)
               end
             end
