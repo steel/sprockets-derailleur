@@ -98,7 +98,7 @@ module Sprockets
             time = Benchmark.measure do
               data = {'assets' => {}, 'files' => {}, 'errors' => {}}
 
-              find(path) do |asset|
+              version_agnostic_find(path).each do |asset|
                 data['files'][asset.digest_path] = {
                   'logical_path' => asset.logical_path,
                   'mtime'        => asset.mtime.iso8601,
@@ -114,7 +114,7 @@ module Sprockets
                 else
                   logger.debug "Writing #{target}"
                   asset.write_to target
-                  asset.write_to "#{target}.gz" unless environment.skip_gzip?
+                  asset.write_to "#{target}.gz" unless skip_gzip?(asset)
                 end
 
                 Marshal.dump(data, child_write)
@@ -133,6 +133,28 @@ module Sprockets
       child_write.close
 
       {:read => parent_read, :write => parent_write, :pid => pid}
+    end
+
+    private
+
+    def version_agnostic_find(*args)
+      if sprockets2?
+        [find_asset(*args)].each
+      else
+        find(*args)
+      end
+    end
+
+    def sprockets2?
+      Sprockets::VERSION.start_with?('2')
+    end
+
+    def skip_gzip?(asset)
+      if sprockets2?
+        asset.is_a?(BundledAsset)
+      else
+        environment.skip_gzip?
+      end
     end
   end
 end
