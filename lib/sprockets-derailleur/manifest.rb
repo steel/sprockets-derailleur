@@ -112,7 +112,7 @@ module Sprockets
                 if File.exist?(target)
                   logger.debug "Skipping #{target}, already exists"
                 else
-                  logger.debug "Writing #{target}"
+                  logger.info "Writing #{target}"
                   asset.write_to target
                   asset.write_to "#{target}.gz" unless skip_gzip?(asset)
                 end
