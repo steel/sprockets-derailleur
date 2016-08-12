@@ -98,8 +98,7 @@ module Sprockets
             time = Benchmark.measure do
               data = {'assets' => {}, 'files' => {}, 'errors' => {}}
 
-              if asset = find_asset(path)
-
+              version_agnostic_find(path).each do |asset|
                 data['files'][asset.digest_path] = {
                   'logical_path' => asset.logical_path,
                   'mtime'        => asset.mtime.iso8601,
@@ -113,14 +112,11 @@ module Sprockets
                 if File.exist?(target)
                   logger.debug "Skipping #{target}, already exists"
                 else
-                  logger.debug "Writing #{target}"
+                  logger.info "Writing #{target}"
                   asset.write_to target
-                  asset.write_to "#{target}.gz" if asset.is_a?(BundledAsset)
+                  asset.write_to "#{target}.gz" unless skip_gzip?(asset)
                 end
 
-                Marshal.dump(data, child_write)
-              else
-                data['errors'][path] = "Not found"
                 Marshal.dump(data, child_write)
               end
             end
@@ -137,6 +133,28 @@ module Sprockets
       child_write.close
 
       {:read => parent_read, :write => parent_write, :pid => pid}
+    end
+
+    private
+
+    def version_agnostic_find(*args)
+      if sprockets2?
+        [find_asset(*args)].each
+      else
+        find(*args)
+      end
+    end
+
+    def sprockets2?
+      Sprockets::VERSION.start_with?('2')
+    end
+
+    def skip_gzip?(asset)
+      if sprockets2?
+        asset.is_a?(BundledAsset)
+      else
+        environment.skip_gzip?
+      end
     end
   end
 end
