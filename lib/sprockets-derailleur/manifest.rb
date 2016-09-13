@@ -123,8 +123,8 @@ module Sprockets
               end
             end
 
-            if SprocketsDerailleur.configuration.warn_compile_times
-              logger.warn "Compiled #{path} (#{(time.real * 1000).round}ms, pid #{Process.pid})"
+            if SprocketsDerailleur.configuration.compile_times_to_info_log
+              logger.info "Compiled #{path} (#{(time.real * 1000).round}ms, pid #{Process.pid})"
             else
               logger.debug "Compiled #{path} (#{(time.real * 1000).round}ms, pid #{Process.pid})"
             end

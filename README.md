@@ -27,9 +27,9 @@ SprocketsDerailleur.configure do |config|
   # Override how long the file lock timeout lasts
   # config.file_lock_timeout = 10
 
-  # Set to true to log the compiled time lines to the warn level
+  # Set to true to log the compiled time lines to the info level
   # (usually they are logged to the debug level)
-  #config.warn_compile_times = false
+  #config.compile_times_to_info_log = false
 
   # Override the number of workers to use
   # If not set will use SPROCKETS_DERAILLEUR_WORKER_COUNT environment variable
