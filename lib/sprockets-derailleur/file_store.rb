@@ -23,7 +23,7 @@ module SprocketsDerailleur
     end
 
     def with_lock(type)
-      Timeout::timeout(10) { lock.flock(type) }
+      Timeout::timeout(SprocketsDerailleur.configuration.file_lock_timeout) { lock.flock(type) }
       yield
     ensure
       lock.flock(File::LOCK_UN)

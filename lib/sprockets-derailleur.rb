@@ -1,8 +1,21 @@
 require "sprockets-derailleur/version"
 require "sprockets-derailleur/manifest"
 require "sprockets-derailleur/file_store"
+require "sprockets-derailleur/configuration"
 
 module SprocketsDerailleur
+  class << self
+    attr_writer :configuration
+  end
+
+  def self.configuration
+    @configuration ||= Configuration.new
+  end
+
+  def self.configure
+    yield(configuration)
+  end
+
   def self.number_of_processors
     if RUBY_PLATFORM =~ /linux/
       return `cat /proc/cpuinfo | grep processor | wc -l`.to_i
