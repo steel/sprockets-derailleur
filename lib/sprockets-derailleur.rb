@@ -38,7 +38,7 @@ module SprocketsDerailleur
   end
 
   def self.worker_count
-    worker_count = ENV['SPROCKETS_DERAILLEUR_WORKER_COUNT'].to_i
+    worker_count = SprocketsDerailleur.configuration.worker_count || ENV['SPROCKETS_DERAILLEUR_WORKER_COUNT'].to_i
     return worker_count if worker_count > 0
     number_of_processors
   rescue
