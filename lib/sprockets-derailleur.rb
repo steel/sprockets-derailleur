@@ -1,5 +1,6 @@
 require "sprockets-derailleur/version"
 require "sprockets-derailleur/manifest"
+require "sprockets-derailleur/file_store_extension"
 require "sprockets-derailleur/file_store"
 require "sprockets-derailleur/configuration"
 
@@ -43,5 +44,13 @@ module SprocketsDerailleur
     number_of_processors
   rescue
     1
+  end
+
+  def self.prepend_file_store_if_required
+    if SprocketsDerailleur.configuration.use_sprockets_derailleur_file_store
+      Sprockets::Cache::FileStore.class_eval do
+        prepend SprocketsDerailleur::FileStoreExtension
+      end
+    end
   end
 end

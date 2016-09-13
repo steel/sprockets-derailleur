@@ -4,6 +4,8 @@ module Sprockets
   class Manifest
     alias_method :compile_with_workers, :compile
     def compile(*args)
+      SprocketsDerailleur::prepend_file_store_if_required
+
       worker_count = SprocketsDerailleur::worker_count
       paths_with_errors = {}
 
