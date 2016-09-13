@@ -10,9 +10,33 @@ Speed up Manifest::Compile by forking processes
 
 ## Usage
 
-To override the number of processes you can use the
-`SPROCKETS_DERAILLEUR_WORKER_COUNT` environment variable. It defaults to the
-number of processors on your machine.
+To override the number of processes you can use the `worker_count` configuration
+setting or the `SPROCKETS_DERAILLEUR_WORKER_COUNT` environment variable.
+It defaults to the number of processors on your machine.
+
+### Configuration
+
+You are able to configure Sprockets::Derailleur by creating a configure block (an example can be seen below).
+This is entirely optional and will by default use the settings commented out in the example below.
+If you would like to configure Sprockets::Derailleur, putting this configuration in an initializer is a good idea.
+
+```ruby
+# file: config/initializers/sprockets-derailleur.rb
+
+SprocketsDerailleur.configure do |config|
+  # Override how long the file lock timeout lasts
+  # config.file_lock_timeout = 10
+
+  # Set to true to log the compiled time lines to the warn level
+  # (usually they are logged to the debug level)
+  #config.warn_compile_times = false
+
+  # Override the number of workers to use
+  # If not set will use SPROCKETS_DERAILLEUR_WORKER_COUNT environment variable
+  # and if that's also not set, then will use the number of processors
+  # config.worker_count = 8
+end
+```
 
 ### Rails 4.0
 
