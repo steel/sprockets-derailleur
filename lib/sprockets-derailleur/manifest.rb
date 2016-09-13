@@ -121,7 +121,11 @@ module Sprockets
               end
             end
 
-            logger.debug "Compiled #{path} (#{(time.real * 1000).round}ms, pid #{Process.pid})"
+            if SprocketsDerailleur.configuration.warn_compile_times
+              logger.warn "Compiled #{path} (#{(time.real * 1000).round}ms, pid #{Process.pid})"
+            else
+              logger.debug "Compiled #{path} (#{(time.real * 1000).round}ms, pid #{Process.pid})"
+            end
           end
         ensure
           child_read.close
