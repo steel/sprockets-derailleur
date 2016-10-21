@@ -2,6 +2,8 @@
 
 Speed up Manifest::Compile by forking processes 
 
+**Warning: Do not use with Sprockets 3+!** (See [#25](https://github.com/steel/sprockets-derailleur/issues/25) for details.)
+
 ## Installation
 
 1. Add this line to your application's Gemfile: `gem 'sprockets-derailleur'`
