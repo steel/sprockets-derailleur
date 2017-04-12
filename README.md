@@ -1,6 +1,6 @@
 # Sprockets::Derailleur
 
-Speed up Manifest::Compile by forking processes 
+Speed up Manifest::Compile by forking processes
 
 **Warning: Do not use with Sprockets 3+!** (See [#25](https://github.com/steel/sprockets-derailleur/issues/25) for details.)
 
@@ -12,9 +12,38 @@ Speed up Manifest::Compile by forking processes
 
 ## Usage
 
-To override the number of processes you can use the
-`SPROCKETS_DERAILLEUR_WORKER_COUNT` environment variable. It defaults to the
-number of processors on your machine.
+To override the number of processes you can use the `worker_count` configuration
+setting or the `SPROCKETS_DERAILLEUR_WORKER_COUNT` environment variable.
+It defaults to the number of processors on your machine.
+
+### Configuration
+
+You are able to configure Sprockets::Derailleur by creating a configure block (an example can be seen below).
+This is entirely optional and will by default use the settings commented out in the example below.
+If you would like to configure Sprockets::Derailleur, putting this configuration in an initializer is a good idea.
+
+```ruby
+# file: config/initializers/sprockets-derailleur.rb
+
+SprocketsDerailleur.configure do |config|
+  # Override how long the file lock timeout lasts
+  # config.file_lock_timeout = 10
+
+  # Set to true to log the compiled time lines to the info level
+  # (usually they are logged to the debug level)
+  #config.compile_times_to_info_log = false
+
+  # Override the number of workers to use
+  # If not set will use SPROCKETS_DERAILLEUR_WORKER_COUNT environment variable
+  # and if that's also not set, then will use the number of processors
+  # config.worker_count = 8
+
+  # Has the same effect as setting the rails cache file store to be the new
+  # thread safe sprockets derailleur one, but monkey patches methods instead of
+  # instantiating new object.
+  # config.use_sprockets_derailleur_file_store = false
+end
+```
 
 ### Rails 4.0
 
@@ -29,24 +58,24 @@ Here we need to override some core parts of the sprockets module.
 ```ruby
 module Sprockets
   class StaticCompiler
-  
+
     alias_method :compile_without_manifest, :compile
     def compile
       puts "Multithreading on " + SprocketsDerailleur.worker_count.to_s + " processors"
       puts "Starting Asset Compile: " + Time.now.getutc.to_s
-      
+
       # Then initialize the manifest with the workers you just determined
       manifest = Sprockets::Manifest.new(env, target)
       manifest.compile paths
-      
+
       puts "Finished Asset Compile: " + Time.now.getutc.to_s
-      
+
     end
   end
-  
+
   class Railtie < ::Rails::Railtie
     config.after_initialize do |app|
-      
+
       config = app.config
       next unless config.assets.enabled
 
@@ -60,10 +89,10 @@ module Sprockets
         manifest = Sprockets::Manifest.new(app, path)
         config.assets.digests = manifest.assets
       end
-      
+
     end
   end
-  
+
 end
 ```
 

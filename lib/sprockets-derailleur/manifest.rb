@@ -4,6 +4,8 @@ module Sprockets
   class Manifest
     alias_method :compile_with_workers, :compile
     def compile(*args)
+      SprocketsDerailleur::prepend_file_store_if_required
+
       worker_count = SprocketsDerailleur::worker_count
       paths_with_errors = {}
 
@@ -121,7 +123,11 @@ module Sprockets
               end
             end
 
-            logger.debug "Compiled #{path} (#{(time.real * 1000).round}ms, pid #{Process.pid})"
+            if SprocketsDerailleur.configuration.compile_times_to_info_log
+              logger.info "Compiled #{path} (#{(time.real * 1000).round}ms, pid #{Process.pid})"
+            else
+              logger.debug "Compiled #{path} (#{(time.real * 1000).round}ms, pid #{Process.pid})"
+            end
           end
         ensure
           child_read.close
