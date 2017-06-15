@@ -157,7 +157,7 @@ module Sprockets
 
     def skip_gzip?(asset)
       if sprockets2?
-        asset.is_a?(BundledAsset)
+        !asset.is_a?(BundledAsset)
       else
         environment.skip_gzip?
       end
